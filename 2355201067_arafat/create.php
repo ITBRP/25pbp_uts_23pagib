@@ -39,10 +39,16 @@ if(!isset($data['model'])){
     }
 }
 
+$tahunskrg = date('Y');
+
 if (!isset($data['year']) || trim($data['year']) === '') {
     $errors['year'] = "Format tahun tidak valid";
 } else {
-    if (!preg_match('/^[0-9]{4}$/', $data['year'])) {
+    $year = $data['year'];
+
+    if (!preg_match('/^[0-9]{4}$/', $year)) {
+        $errors['year'] = "Format tahun tidak valid";
+    } elseif ($year < 1990 || $year > $tahunskrg) {
         $errors['year'] = "Format tahun tidak valid";
     }
 }
