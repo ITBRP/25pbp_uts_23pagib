@@ -1,7 +1,3 @@
-
-URL format:
-update.php?id=MBL123456
-
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
