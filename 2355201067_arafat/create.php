@@ -14,7 +14,6 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 // block jika method benar
 $errors = [];
 
-/* ================= BRAND ================= */
 if (!isset($_POST['brand']) || trim($_POST['brand']) === '') {
     $errors['brand'] = "Minimal 2 karakter";
 } else {
@@ -23,7 +22,6 @@ if (!isset($_POST['brand']) || trim($_POST['brand']) === '') {
     }
 }
 
-/* ================= MODEL ================= */
 if (!isset($_POST['model']) || trim($_POST['model']) === '') {
     $errors['model'] = "Tidak boleh karakter spesial";
 } else {
@@ -32,7 +30,6 @@ if (!isset($_POST['model']) || trim($_POST['model']) === '') {
     }
 }
 
-/* ================= YEAR ================= */
 $yearNow = date('Y');
 
 if (!isset($_POST['year']) || trim($_POST['year']) === '') {
@@ -47,7 +44,6 @@ if (!isset($_POST['year']) || trim($_POST['year']) === '') {
     }
 }
 
-/* ================= PRICE ================= */
 if (!isset($_POST['price']) || trim($_POST['price']) === '') {
     $errors['price'] = "Harus berupa angka dan lebih dari 0";
 } else {
@@ -56,7 +52,6 @@ if (!isset($_POST['price']) || trim($_POST['price']) === '') {
     }
 }
 
-/* ================= TRANSMISSION =================*/
 if (isset($_POST['transmission']) && trim($_POST['transmission']) !== '') {
     $validTrans = ['Manual', 'Automatic'];
     if (!in_array($_POST['transmission'], $validTrans)) {
@@ -64,7 +59,6 @@ if (isset($_POST['transmission']) && trim($_POST['transmission']) !== '') {
     }
 }
 
-/* ================= PHOTO ================= */
 $anyPhoto = false;
 $namaPhoto = null;
 
@@ -84,7 +78,6 @@ if (isset($_FILES['photo'])) {
     }
 }
 
-/* ================= ERROR RESPONSE ================= */
 if (count($errors) > 0) {
     http_response_code(400);
     echo json_encode([
@@ -95,7 +88,6 @@ if (count($errors) > 0) {
     exit();
 }
 
-/* ================= INSERT DB ================= */
 $koneksi = new mysqli('localhost', 'root', '', 'data_mobil');
 
 $brand = $_POST['brand'];
@@ -115,7 +107,6 @@ $q = "INSERT INTO table_datamobil(brand, model, year, price, transmission, photo
 
 $koneksi->query($q);
 
-/* ================= SUCCESS RESPONSE ================= */
 http_response_code(201);
 
 echo json_encode([
