@@ -8,7 +8,7 @@ if (!isset($_POST['id'])) {
     exit();
 }
 
-$id = $_GET['id'];
+$id = $_POST['id'];
 
 $k = new mysqli("localhost","root","","db_uts");
 
