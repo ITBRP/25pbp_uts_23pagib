@@ -2,13 +2,13 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-if (!isset($_POST['id'])) {
+if (!isset($_GET['id'])) {
     http_response_code(400);
     echo json_encode(["status"=>"error","msg"=>"ID wajib dikirim"]);
     exit();
 }
 
-$id = $_POST['id'];
+$id = $_GET['id'];
 
 $k = new mysqli("localhost","root","","db_uts");
 
