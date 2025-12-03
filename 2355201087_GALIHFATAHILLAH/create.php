@@ -1,82 +1,130 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-if($_SERVER['REQUEST_METHOD'] !== 'POST'){
-    http_response_code(405);
-    echo json_encode(["status"=>"error","msg"=>"Method salah"]);
+// METHOD CHECK
+if ($_SERVER["REQUEST_METHOD"] !== "POST") {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
     exit();
-}
-
-$input = json_decode(file_get_contents("php://input"), true);
+};
 
 $errors = [];
 
+/* VALIDASI */
+
 // BRAND
-if(!isset($input['brand']) || strlen(trim($input['brand'])) < 2){
-    $errors['brand'] = "Brand minimal 2 karakter";
+if (!isset($_POST['brand']) || strlen(trim($_POST['brand'])) < 2) {
+    $errors['brand'] = "Minimal 2 karakter";
 }
 
 // MODEL
-if(!isset($input['model']) || !preg_match('/^[a-zA-Z0-9 ]+$/', $input['model'])){
-    $errors['model'] = "Model tidak valid";
+if (!isset($_POST['model']) || !preg_match('/^[a-zA-Z0-9 ]+$/', $_POST['model'])) {
+    $errors['model'] = "Tidak boleh karakter spesial";
 }
 
-// YEAR (YEAR TYPE)
-if(!isset($input['year']) || !preg_match('/^[0-9]{4}$/', $input['year']) ||
-   $input['year'] < 1990 || $input['year'] > date("Y")){
-    $errors['year'] = "Tahun tidak valid (1990 - " . date("Y") . ")";
+// YEAR
+if (!isset($_POST['year']) || !is_numeric($_POST['year']) ||
+    $_POST['year'] < 1990 || $_POST['year'] > date("Y")) {
+    $errors['year'] = "Format tahun tidak valid";
 }
 
 // PRICE
-if(!isset($input['price']) || !is_numeric($input['price']) || $input['price'] <= 0){
-    $errors['price'] = "Harga tidak valid";
+if (!isset($_POST['price']) || !is_numeric($_POST['price']) || $_POST['price'] <= 0) {
+    $errors['price'] = "Harus berupa angka dan lebih dari 0";
 }
 
 // TRANSMISSION
-if(!isset($input['transmission']) || !in_array($input['transmission'], ['Manual','Automatic'])){
-    $errors['transmission'] = "Transmission tidak valid";
-}
-
-// PHOTO (BASE64)
-$photo = null;
-if(isset($input['photo']) && $input['photo'] !== ""){
-    if(preg_match('/^data:image\/(jpg|jpeg|png);base64,/', $input['photo'])){
-        $photo = $input['photo'];
-    } else {
-        $errors['photo'] = "Format foto harus base64 (jpg/jpeg/png)";
+if (isset($_POST['transmission']) && $_POST['transmission'] !== '') {
+    if (!in_array($_POST['transmission'], ['Manual', 'Automatic'])) {
+        $errors['transmission'] = "Transmission tidak valid";
     }
 }
 
-if(count($errors) > 0){
+// PHOTO
+$anyPhoto = false;
+$namaPhoto = "";
+
+if (isset($_FILES["photo"]) && $_FILES["photo"]["error"] !== UPLOAD_ERR_NO_FILE) {
+
+    $allowed = ['jpg','jpeg','png'];
+    $ext = strtolower(pathinfo($_FILES["photo"]["name"], PATHINFO_EXTENSION));
+
+    if (!in_array($ext, $allowed)) {
+        $errors['photo'] = "Format file tidak valid (hanya jpg, jpeg, png)";
+    } else {
+        $anyPhoto = true;
+        $namaPhoto = md5(time()).".".$ext;
+    }
+}
+
+// VALIDATION ERROR → 400
+if (count($errors) > 0) {
     http_response_code(400);
-    echo json_encode(["status"=>"error","msg"=>"Data error","errors"=>$errors]);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Data error",
+        "errors" => $errors
+    ]);
     exit();
 }
 
-$k = new mysqli("localhost","root","","uts_mobil");
+// DATABASE
+$k = new mysqli("localhost", "root", "", "uts_mobil");
 
-$brand = $input['brand'];
-$model = $input['model'];
-$year = $input['year'];
-$price = $input['price'];
-$trans = $input['transmission'];
+if ($k->connect_errno) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
 
+// Upload file
+if ($anyPhoto) {
+    if (!is_dir('img')) mkdir('img');
+    move_uploaded_file($_FILES["photo"]["tmp_name"], "img/".$namaPhoto);
+}
+
+$brand = $_POST['brand'];
+$model = $_POST['model'];
+$year  = $_POST['year'];
+$price = $_POST['price'];
+$trans = $_POST['transmission'] ?? null;
+
+// QUERY
 $q = "INSERT INTO mobil (brand, model, year, price, transmission, photo)
-      VALUES ('$brand','$model','$year','$price','$trans',".($photo ? "'".$k->real_escape_string($photo)."'" : "NULL").")";
+      VALUES ('$brand', '$model', '$year', '$price', ".
+      ($trans ? "'$trans'" : "NULL") .", ".
+      ($namaPhoto ? "'$namaPhoto'" : "NULL") .")";
 
-$k->query($q);
+// SERVER ERROR → 500 **FORMAT WAJIB LIKE DOSEN**
+if (!$k->query($q)) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
+
 $id = $k->insert_id;
 
+// SUCCESS → 201
+http_response_code(201);
 echo json_encode([
-    "status"=>"success",
-    "msg"=>"Insert success",
-    "data"=>[
-        "id"=>$id,
-        "brand"=>$brand,
-        "model"=>$model,
-        "year"=>$year,
-        "price"=>$price,
-        "transmission"=>$trans,
-        "photo"=>$photo
+    "status" => "success",
+    "msg" => "Process success",
+    "data" => [
+        "id" => $id,
+        "brand" => $brand,
+        "model" => $model,
+        "year" => $year,
+        "price" => $price,
+        "transmission" => $trans,
+        "photo" => $namaPhoto
     ]
 ]);
