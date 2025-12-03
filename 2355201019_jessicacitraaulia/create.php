@@ -3,7 +3,7 @@ header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     http_response_code(405);
-    echo json_encode(["status"=>"error","msg"=>"Method salah"]);
+    echo json_encode(["status"=>"error","msg"=>"Server Error"]);
     exit();
 }
 
@@ -34,6 +34,7 @@ if (!isset($_POST['price']) || !is_numeric($_POST['price']) || $_POST['price'] <
 if (!isset($_POST['transmission']) || !in_array($_POST['transmission'], ['Manual','Automatic'])) {
     $errors['transmission'] = "Transmission tidak valid";
 }
+
 
 // Validasi foto
 $anyPhoto = false;

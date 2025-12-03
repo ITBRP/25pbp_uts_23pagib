@@ -1,36 +1,34 @@
 <?php
-header("Content-Type: application/json; charset=UTF-8");
+header("Content-Type: application/json");
 
-if ($_SERVER['REQUEST_METHOD'] !== 'DELETE') {
-    http_response_code(405);
-    echo json_encode(["status"=>"error","msg"=>"Gunakan DELETE"]);
+if ($_SERVER["REQUEST_METHOD"] !== "DELETE") {
+    http_response_code(500);
+    echo json_encode(["status"=>"error","msg"=>" Server error"]);
     exit();
 }
 
-$data = json_decode(file_get_contents("php://input"), true);
-
-if (!isset($data['id'])) {
-    echo json_encode(["status"=>"error","msg"=>"ID wajib"]);
+if (!isset($_GET['id'])) {
+    http_response_code(400);
+    echo json_encode(["status"=>"error","msg"=>"ID required"]);
     exit();
 }
 
-$id = $data['id'];
+$id = $_GET['id'];
 
 $k = new mysqli("localhost","root","","uts1_mobil");
-$cek = $k->query("SELECT photo FROM mobil WHERE id='$id'");
 
+// CEK DATA
+$cek = $k->query("SELECT * FROM mobil WHERE id='$id'");
 if ($cek->num_rows === 0) {
-    echo json_encode(["status"=>"error","msg"=>"Data tidak ditemukan"]);
+    http_response_code(404);
+    echo json_encode(["status"=>"error","msg"=>"Data not found"]);
     exit();
 }
-
-$row = $cek->fetch_assoc();
-if ($row['photo'] && file_exists("img/".$row['photo'])) unlink("img/".$row['photo']);
 
 $k->query("DELETE FROM mobil WHERE id='$id'");
 
 echo json_encode([
     "status"=>"success",
-    "msg"=>"Data berhasil dihapus",
-    "deleted_id"=>$id
+    "msg"=>"Delete data success",
+    "data"=>["id"=>$id]
 ]);
