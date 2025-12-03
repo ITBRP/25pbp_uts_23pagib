@@ -2,7 +2,7 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-if (!isset($_GET['id'])) {
+if (!isset($_POST['id'])) {
     http_response_code(400);
     echo json_encode(["status"=>"error","msg"=>"ID wajib dikirim"]);
     exit();
