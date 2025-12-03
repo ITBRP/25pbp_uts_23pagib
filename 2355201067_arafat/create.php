@@ -1,100 +1,122 @@
-<?php 
+<?php
 
 header("Content-Type: application/json; charset=UTF-8");
 
-
-if($_SERVER['REQUEST_METHOD'] != 'POST'){
+if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     http_response_code(500);
-    $res = [
+    echo json_encode([
         'status' => 'error',
         'msg' => 'server error !'
-    ];
-    echo json_encode($res); //konversi string jadi json
+    ]);
     exit();
 }
 
-// block jika method nya benar
-$json = file_get_contents("php://input");
-$data = json_decode($json, true);
-
+// block jika method benar
 $errors = [];
 
-if(!isset($data['brand'])){
-    $errors['brand'] = "brand harus diisi!";
-}else{
-    if($data['brand']==''){
-        $errors['brand'] = "brand tidak boleh kosong !!!";
-    }elseif(strlen($data['brand'])<2){
-        $errors['brand'] = "brand minimal 2 karakter";
+/* ================= BRAND ================= */
+if (!isset($_POST['brand']) || trim($_POST['brand']) === '') {
+    $errors['brand'] = "Minimal 2 karakter";
+} else {
+    if (strlen(trim($_POST['brand'])) < 2) {
+        $errors['brand'] = "Minimal 2 karakter";
     }
 }
 
-if(!isset($data['model'])){
-    $errors['model'] = "model harus diisi!";
-}else{
-    if($data['model']==''){
-        $errors['model'] = "model tidak boleh kosong !!!";
-    }elseif(!preg_match('/^[A-Za-z ]+$/', $data['model'])){
-        $errors['model'] = "model tidak boleh ada karakter spesial";
+/* ================= MODEL ================= */
+if (!isset($_POST['model']) || trim($_POST['model']) === '') {
+    $errors['model'] = "Tidak boleh karakter spesial";
+} else {
+    if (!preg_match('/^[A-Za-z0-9 ]+$/', $_POST['model'])) {
+        $errors['model'] = "Tidak boleh karakter spesial";
     }
 }
 
-$tahunskrg = date('Y');
+/* ================= YEAR ================= */
+$yearNow = date('Y');
 
-if (!isset($data['year']) || trim($data['year']) === '') {
+if (!isset($_POST['year']) || trim($_POST['year']) === '') {
     $errors['year'] = "Format tahun tidak valid";
 } else {
-    $year = $data['year'];
+    $year = $_POST['year'];
 
     if (!preg_match('/^[0-9]{4}$/', $year)) {
         $errors['year'] = "Format tahun tidak valid";
-    } elseif ($year < 1990 || $year > $tahunskrg) {
+    } elseif ($year < 1990 || $year > $yearNow) {
         $errors['year'] = "Format tahun tidak valid";
     }
 }
 
-if (!isset($data['price']) || trim($data['price']) === '') {
+/* ================= PRICE ================= */
+if (!isset($_POST['price']) || trim($_POST['price']) === '') {
     $errors['price'] = "Harus berupa angka dan lebih dari 0";
 } else {
-    if (!is_numeric($data['price']) || $data['price'] <= 0) {
+    if (!is_numeric($_POST['price']) || $_POST['price'] <= 0) {
         $errors['price'] = "Harus berupa angka dan lebih dari 0";
     }
 }
 
-if (!isset($_FILES['photo']) || $_FILES['photo']['error'] !== 0) {
-    $errors['photo'] = "Format file tidak valid (hanya jpg, jpeg, png)";
-} else {
-    $allowed = ['jpg', 'jpeg', 'png'];
-    $ext = strtolower(pathinfo($_FILES['photo']['name'], PATHINFO_EXTENSION));
-
-    if (!in_array($ext, $allowed)) {
-        $errors['photo'] = "Format file tidak valid (jpg, jpeg, png)";
+/* ================= TRANSMISSION =================*/
+if (isset($_POST['transmission']) && trim($_POST['transmission']) !== '') {
+    $validTrans = ['Manual', 'Automatic'];
+    if (!in_array($_POST['transmission'], $validTrans)) {
+        $errors['transmission'] = "Nilai tidak valid (hanya Manual atau Automatic)";
     }
 }
 
-if(count($errors)>0){
+/* ================= PHOTO ================= */
+$anyPhoto = false;
+$namaPhoto = null;
+
+if (isset($_FILES['photo'])) {
+    if ($_FILES['photo']['error'] !== UPLOAD_ERR_NO_FILE) {
+
+        $allowed = ['jpg', 'jpeg', 'png'];
+        $fileName = $_FILES['photo']['name'];
+        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+
+        if (!in_array($ext, $allowed)) {
+            $errors['photo'] = "Format file tidak valid (hanya jpg, jpeg, png)";
+        } else {
+            $anyPhoto = true;
+            $namaPhoto = md5(date('dmyhis')) . "." . $ext;
+        }
+    }
+}
+
+/* ================= ERROR RESPONSE ================= */
+if (count($errors) > 0) {
     http_response_code(400);
-    $res = [
+    echo json_encode([
         'status' => 'error',
         'msg' => 'data error!',
         'errors' => $errors
-    ];
-    echo json_encode($res);
+    ]);
     exit();
 }
 
-// insert ke db
+/* ================= INSERT DB ================= */
 $koneksi = new mysqli('localhost', 'root', '', 'data_mobil');
-$brand = $data['brand'];
-$model = $data['model'];
-$year = $data['year'];
-$price = $data['price'];
-$transmission = $data['transmission'];
-$photo = $data['photo'];
-$q = "INSERT INTO table_datamobil(brand, model, year, price, transmission, photo) VALUES('$brand', '$model', '$year', '$price', '$transmission', '$photo')";
-$sukses = $koneksi->query($q);
-$id = $koneksi->insert_id;
 
+$brand = $_POST['brand'];
+$model = $_POST['model'];
+$year  = $_POST['year'];
+$price = $_POST['price'];
+$transmission = $_POST['transmission'] ?? null;
+
+if ($anyPhoto) {
+    move_uploaded_file($_FILES['photo']['tmp_name'], 'img/' . $namaPhoto);
+}
+
+$q = "INSERT INTO table_datamobil(brand, model, year, price, transmission, photo) 
+      VALUES('$brand', '$model', '$year', '$price', " . 
+      ($transmission ? "'$transmission'" : "NULL") . ", " . 
+      ($namaPhoto ? "'$namaPhoto'" : "NULL") . ")";
+
+$koneksi->query($q);
+
+/* ================= SUCCESS RESPONSE ================= */
+http_response_code(201);
 
 echo json_encode([
     'status' => "success",
@@ -105,11 +127,7 @@ echo json_encode([
         'year' => $year,
         'price' => $price,
         'transmission' => $transmission,
-        'photo' => $photo
+        'photo' => $namaPhoto
     ]
 ]);
-
-
-// http_response_code(500);
-
-?>
+exit();
