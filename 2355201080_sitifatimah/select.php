@@ -1,7 +1,7 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-// METHOD CHECK (GET ONLY)
+// METHOD CHECK (sesuai permintaan kamu → 500)
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     http_response_code(500);
     echo json_encode([
@@ -11,28 +11,18 @@ if ($_SERVER["REQUEST_METHOD"] !== "GET") {
     exit();
 }
 
-
-if (!isset($_GET['id'])) {
-    http_response_code(400);
-    echo json_encode(["status" => "error", "msg" => "ID wajib dikirim"]);
-    exit();
-}
-
-$id = $_GET['id'];
-
 $k = new mysqli("localhost", "root", "", "db_mobil");
 
-$q = "SELECT * FROM mobil WHERE id='$id'";
+$q = "SELECT * FROM mobil ORDER BY id DESC";
 $res = $k->query($q);
 
-if ($res->num_rows === 0) {
-    http_response_code(404);
-    echo json_encode(["status" => "error", "msg" => "Data not found"]);
-    exit();
+$data = [];
+while ($row = $res->fetch_assoc()) {
+    $data[] = $row;
 }
 
 echo json_encode([
     "status" => "success",
     "msg" => "Process success",
-    "data" => $res->fetch_assoc()
+    "data" => $data
 ]);

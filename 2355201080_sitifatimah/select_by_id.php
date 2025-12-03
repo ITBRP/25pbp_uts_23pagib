@@ -1,6 +1,17 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
+// METHOD CHECK (GET ONLY)
+if ($_SERVER["REQUEST_METHOD"] !== "GET") {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server Error"
+    ]);
+    exit();
+}
+
+
 if (!isset($_GET['id'])) {
     http_response_code(400);
     echo json_encode(["status" => "error", "msg" => "ID wajib dikirim"]);
