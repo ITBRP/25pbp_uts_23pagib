@@ -1,4 +1,3 @@
-🟦 2) select.php — GET semua data
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
