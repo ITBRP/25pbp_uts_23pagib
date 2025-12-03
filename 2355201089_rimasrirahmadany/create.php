@@ -59,7 +59,7 @@ if (count($errors) > 0) {
 }
 
 
-$k = new mysqli("localhost", "root", "", "uts_mobil");
+$k = new mysqli("localhost", "root", "", "db_uts");
 
 
 $id = "MBL" . time() . rand(100,999);
