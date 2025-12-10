@@ -2,7 +2,7 @@
 header("Content-Type: application/json; charset=UTF-8");
 
 if (!isset($_GET['id'])) {
-    http_response_code(400);
+    http_response_code(405);
     echo json_encode(["status"=>"error","msg"=>"ID wajib dikirim"]);
     exit();
 }
@@ -10,6 +10,7 @@ if (!isset($_GET['id'])) {
 $id = $_GET['id'];
 
 $k = new mysqli("localhost","root","","db_uts");
+
 
 $q = "SELECT * FROM mobil WHERE id='$id'";
 $res = $k->query($q);
