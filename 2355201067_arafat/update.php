@@ -3,7 +3,7 @@
 header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
-    http_response_code(500);
+    http_response_code(405);
     echo json_encode([
         "status" => "error",
         "msg" => "Server error"
@@ -50,22 +50,43 @@ $lama = $cek->fetch_assoc();
 
 $errors = [];
 
-if (!isset($input['brand']) || trim($input['brand']) === '' || strlen($input['brand']) < 2) {
-    $errors["brand"] = "Minimal 2 karakter";
+if (!isset($input['brand']) || trim($input['brand']) === '') {
+    $errors["brand"] = "brand wajib diisi";
+}else{
+    if(strlen($input['brand'])<2){
+       $errors["brand"] = "minimial 2 karakter"; 
+    }
 }
 
-if (!isset($input['model']) || trim($input['model']) === '' || !preg_match('/^[A-Za-z0-9 ]+$/', $input['model'])) {
-    $errors["model"] = "Tidak boleh karakter spesial";
+if (!isset($input['model']) || trim($input['model']) === '') {
+    $errors["model"] = "model wajib diisi";
+}else{
+    if(!preg_match('/^[A-Za-z0-9 ]+$/', $input['model'])){
+       $errors["brand"] = "tidak boleh karakter spesial"; 
+    }
 }
 
 $yearNow = date("Y");
 
-if (!isset($input['year']) || !preg_match('/^[0-9]{4}$/', $input['year']) || $input['year'] < 1990 || $input['year'] > $yearNow) {
-    $errors["year"] = "Format tahun tidak valid";
+
+if (!isset($input['year']) || trim($input['year']) === '') {
+    $errors['year'] = "year harus diisi";
+} else {
+    $year = $input['year'];
+
+    if (!preg_match('/^[0-9]{4}$/', $year)) {
+        $errors['year'] = "Format tahun tidak valid";
+    } elseif ($year < 1990 || $year > $yearNow) {
+        $errors['year'] = "Format tahun tidak valid";
+    }
 }
 
-if (!isset($input['price']) || !is_numeric($input['price']) || $input['price'] <= 0) {
-    $errors["price"] = "Harus berupa angka dan lebih dari 0";
+if (!isset($input['price']) || trim($input['price']) == '') {
+    $errors['price'] = "price wajib diisi";
+} else {
+    if (!is_numeric($input['price']) || $input['price'] <= 0) {
+        $errors['price'] = "Harus berupa angka dan lebih dari 0";
+    }
 }
 
 if (isset($input['transmission']) && $input['transmission'] !== "") {
