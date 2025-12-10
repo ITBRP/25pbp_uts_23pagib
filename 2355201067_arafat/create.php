@@ -60,7 +60,7 @@ if (isset($_POST['transmission']) && trim($_POST['transmission']) !== '') {
 }
 
 $anyPhoto = false;
-$namaPhoto = '';
+$namaPhoto = null;
 if (isset($_FILES['photo'])) {
 
     // User memilih file
