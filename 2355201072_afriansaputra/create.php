@@ -1,7 +1,8 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
+
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-    http_response_code(500);
+    http_response_code(405);
     $res = [
         'status' => 'error',
         'msg' => 'Method salah !'
@@ -9,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
     echo json_encode($res);
     exit();
 }
-
 
 $errors = [];
 if (!isset($_POST['brand'])) {
@@ -87,14 +87,13 @@ if (!isset($_POST['transmission'])) {
     }
 }
 
+
 $anyPhoto = false;
-$namaPhoto = '';
+$namaPhoto = 'null';
 
 if (isset($_FILES['photo'])) {
 
-    if (!isset($_FILES['photo']) || $_FILES['photo']['error'] === UPLOAD_ERR_NO_FILE) {
-        $errors['photo'] = "Foto wajib diupload";
-    } else {
+    if ($_FILES['photo']['error'] !== UPLOAD_ERR_NO_FILE) {
         $allowed = ['jpg', 'jpeg', 'png'];
         $fileName = $_FILES['photo']['name']; //namaaslifile.JPEG, docx
         $fileExt  = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)); // hasilnya jadi jpeg
@@ -136,7 +135,7 @@ $koneksi->query($q);
 
 $id = $koneksi->insert_id;
 
-
+http_response_code(201);
 echo json_encode([
     'status' => 'ok',
     'msg'    => 'Proses berhasil',

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 10 Des 2025 pada 02.22
+-- Waktu pembuatan: 10 Des 2025 pada 03.50
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.2.12
 
@@ -31,10 +31,10 @@ CREATE TABLE `mobil` (
   `id` int(11) NOT NULL,
   `brand` varchar(50) NOT NULL,
   `model` varchar(50) NOT NULL,
-  `year` decimal(12,2) NOT NULL,
-  `price` enum('Manual','Automatic','','') NOT NULL,
-  `transmission` text NOT NULL,
-  `photo` varchar(50) NOT NULL
+  `year` year(4) NOT NULL,
+  `price` int(11) NOT NULL,
+  `transmission` enum('Manual','Automatic','','') NOT NULL,
+  `photo` text NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -42,8 +42,8 @@ CREATE TABLE `mobil` (
 --
 
 INSERT INTO `mobil` (`id`, `brand`, `model`, `year`, `price`, `transmission`, `photo`) VALUES
-(2, 'Toyota', 'Avanza Facelift', 2024.00, '', 'Automatic', 'mobil_updated.jpg'),
-(3, 'Toyota', 'Avanza', 2023.00, '', 'Automatic', '9cda5ff3ff6ec4895509605ea5cd8874.jpg');
+(2, 'Toyota', 'Avanza Facelift', '2024', 0, 'Automatic', 'mobil_updated.jpg'),
+(3, 'Toyota', 'Avanza', '2023', 0, 'Automatic', '9cda5ff3ff6ec4895509605ea5cd8874.jpg');
 
 --
 -- Indexes for dumped tables
