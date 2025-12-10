@@ -60,22 +60,23 @@ if (isset($_POST['transmission']) && trim($_POST['transmission']) !== '') {
 }
 
 $anyPhoto = false;
-$namaPhoto = null;
-
+$namaPhoto = '';
 if (isset($_FILES['photo'])) {
+
+    // User memilih file
     if ($_FILES['photo']['error'] !== UPLOAD_ERR_NO_FILE) {
-
         $allowed = ['jpg', 'jpeg', 'png'];
-        $fileName = $_FILES['photo']['name'];
-        $ext = strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+        $fileName = $_FILES['photo']['name']; //namaaslifile.JPEG, docx
+        $fileExt  = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)); // hasilnya jadi jpeg
 
-        if (!in_array($ext, $allowed)) {
-            $errors['photo'] = "Format file tidak valid (hanya jpg, jpeg, png)";
+        if (!in_array($fileExt, $allowed)) {
+            $errors['photo'] = "File harus jpg, jpeg atau png";
         } else {
-            $anyPhoto = true;
-            $namaPhoto = md5(date('dmyhis')) . "." . $ext;
+            $anyPhoto = true; // photo valid, siap disave
+            $namaPhoto = md5(date('dmyhis')) . "." . $fileExt; 
         }
     }
+
 }
 
 if (count($errors) > 0) {
