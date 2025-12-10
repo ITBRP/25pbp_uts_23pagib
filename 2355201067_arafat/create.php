@@ -3,7 +3,7 @@
 header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] != 'POST') {
-    http_response_code(500);
+    http_response_code(405);
     echo json_encode([
         'status' => 'error',
         'msg' => 'server error !'
@@ -14,16 +14,16 @@ if ($_SERVER['REQUEST_METHOD'] != 'POST') {
 // block jika method benar
 $errors = [];
 
-if (!isset($_POST['brand']) || trim($_POST['brand']) === '') {
-    $errors['brand'] = "Minimal 2 karakter";
+if (!isset($_POST['brand']) || trim($_POST['brand']) == '') {
+    $errors['brand'] = "brand wajib diisi";
 } else {
     if (strlen(trim($_POST['brand'])) < 2) {
         $errors['brand'] = "Minimal 2 karakter";
     }
 }
 
-if (!isset($_POST['model']) || trim($_POST['model']) === '') {
-    $errors['model'] = "Tidak boleh karakter spesial";
+if (!isset($_POST['model']) || trim($_POST['model']) == '') {
+    $errors['model'] = "model wajib diisi";
 } else {
     if (!preg_match('/^[A-Za-z0-9 ]+$/', $_POST['model'])) {
         $errors['model'] = "Tidak boleh karakter spesial";
@@ -44,8 +44,8 @@ if (!isset($_POST['year']) || trim($_POST['year']) === '') {
     }
 }
 
-if (!isset($_POST['price']) || trim($_POST['price']) === '') {
-    $errors['price'] = "Harus berupa angka dan lebih dari 0";
+if (!isset($_POST['price']) || trim($_POST['price']) == '') {
+    $errors['price'] = "price wajib diisi";
 } else {
     if (!is_numeric($_POST['price']) || $_POST['price'] <= 0) {
         $errors['price'] = "Harus berupa angka dan lebih dari 0";
