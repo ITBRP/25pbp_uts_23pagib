@@ -2,8 +2,8 @@
 header("Content-Type: application/json");
 
 if ($_SERVER["REQUEST_METHOD"] !== "DELETE") {
-    http_response_code(500);
-    echo json_encode(["status"=>"error","msg"=>" Server error"]);
+    http_response_code(405);
+    echo json_encode(["status"=>"error","msg"=>"METHOD SALAH"]);
     exit();
 }
 

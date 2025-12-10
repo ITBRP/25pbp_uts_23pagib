@@ -3,10 +3,10 @@ header("Content-Type: application/json; charset=UTF-8");
 
 // METHOD CHECK
 if ($_SERVER["REQUEST_METHOD"] !== "POST") {
-    http_response_code(500);
+    http_response_code(405);
     echo json_encode([
         "status" => "error",
-        "msg" => "Server error"
+        "msg" => "METHOD SALAH"
     ]);
     exit();
 };
@@ -16,25 +16,47 @@ $errors = [];
 /* VALIDASI */
 
 // BRAND
-if (!isset($_POST['brand']) || strlen(trim($_POST['brand'])) < 2) {
-    $errors['brand'] = "Minimal 2 karakter";
+if (!isset($_POST['brand']) || trim($_POST['brand']) === '') {
+    $errors['brand'] = "Brand wajib diisi";
+} else if (strlen(trim($_POST['brand'])) < 2) {
+    $errors['brand'] = "Brand minimal 2 karakter";
 }
+
+
 
 // MODEL
-if (!isset($_POST['model']) || !preg_match('/^[a-zA-Z0-9 ]+$/', $_POST['model'])) {
-    $errors['model'] = "Tidak boleh karakter spesial";
+if (!isset($_POST['model']) || trim($_POST['model']) == '') {
+    $errors['model'] = "Model wajib diisi";
+} else {
+    if (!preg_match('/^[a-zA-Z0-9 ]+$/', $_POST['model'])) {
+        $errors['model'] = "Model tidak boleh karakter spesial";
+    }
 }
+
 
 // YEAR
-if (!isset($_POST['year']) || !is_numeric($_POST['year']) ||
-    $_POST['year'] < 1990 || $_POST['year'] > date("Y")) {
-    $errors['year'] = "Format tahun tidak valid";
+if (!isset($_POST['year']) || trim($_POST['year']) == '') {
+    $errors['year'] = "Year wajib diisi";
+} else {
+    if (!is_numeric($_POST['year']) ||
+        $_POST['year'] < 1990 ||
+        $_POST['year'] > date("Y")) {
+        $errors['year'] = "Format tahun tidak valid";
+    }
 }
 
+
 // PRICE
-if (!isset($_POST['price']) || !is_numeric($_POST['price']) || $_POST['price'] <= 0) {
-    $errors['price'] = "Harus berupa angka dan lebih dari 0";
+if (!isset($_POST['price'])) {
+    $errors['price'] = "Price wajib disi";
+} else {
+    if ($_POST['price'] === '') {
+        $errors['price'] = "Price tidak boleh kosong";
+    } else if (!is_numeric($_POST['price']) || $_POST['price'] <= 0) {
+        $errors['price'] = "Harus berupa angka dan lebih dari 0";
+    }
 }
+
 
 // TRANSMISSION
 if (isset($_POST['transmission']) && $_POST['transmission'] !== '') {

@@ -3,13 +3,13 @@ header("Content-Type: application/json");
 
 // METHOD CHECK (GET ONLY)
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    http_response_code(500);
+    http_response_code(405);
     echo json_encode([
         "status" => "error",
-        "msg" => "Server error"
+        "msg" => "METHOD SALAH"
     ]);
     exit();
-}
+};
 
 // CEK ID
 if (!isset($_GET['id'])) {

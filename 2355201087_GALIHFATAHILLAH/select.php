@@ -1,12 +1,12 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-// METHOD CHECK (sesuai permintaan kamu → 500)
+// METHOD CHECK 
 if ($_SERVER["REQUEST_METHOD"] !== "GET") {
-    http_response_code(500);
+    http_response_code(405);
     echo json_encode([
         "status" => "error",
-        "msg" => "Server error"
+        "msg" => "METHOD SALAH"
     ]);
     exit();
 }
