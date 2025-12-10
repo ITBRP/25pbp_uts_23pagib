@@ -2,15 +2,23 @@
 header("Content-Type: application/json; charset=UTF-8");
 
 if ($_SERVER['REQUEST_METHOD'] != 'DELETE') {
-    http_response_code(500);
+    http_response_code(405);
     echo json_encode([
         'status' => 'error',
-        'msg' => 'server error'
+        'msg' => 'Method error'
     ]);
     exit();
 }
 
 $koneksi = new mysqli('localhost', 'root', '', 'db_alfeb');
+if ($koneksi->connect_error) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
 
 if ($koneksi->connect_error) {
     http_response_code(500);

@@ -6,13 +6,21 @@ if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
     http_response_code(405); // Method Not Allowed
     echo json_encode([
         'status' => 'error',
-        'msg' => 'server eror'
+        'msg' => 'Method eror'
     ]);
     exit();
 }
 
 // koneksi
 $koneksi = new mysqli('localhost', 'root', '', 'db_alfeb');
+if ($koneksi->connect_error) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
 
 if ($koneksi->connect_error) {
     http_response_code(500);
