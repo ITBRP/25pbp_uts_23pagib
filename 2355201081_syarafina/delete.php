@@ -11,6 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] != 'DELETE') {
 }
 
 $koneksi = new mysqli('localhost', 'root', '', 'db_uts');
+if ($koneksi->connect_error) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
 
 if ($koneksi->connect_error) {
     http_response_code(500);

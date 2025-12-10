@@ -77,7 +77,7 @@ if (!isset($_POST['transmission'])) {
     }
 }
 $anyPhoto = false;
-$namaPhoto = '';
+$namaPhoto = 'null';
 if (isset($_FILES['photo'])) {
 
     // User memilih file
@@ -122,6 +122,14 @@ $q = "INSERT INTO data_mobil(brand, model, year, price, transmission, photo) VAL
 
 
 $koneksi->query($q);
+if ($koneksi->connect_error) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
 $id = $koneksi->insert_id;
 
 http_response_code(201);
