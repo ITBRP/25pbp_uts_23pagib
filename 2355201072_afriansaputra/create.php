@@ -133,6 +133,15 @@ $q = "INSERT INTO mobil (brand, model, year, price, transmission, photo)
 
 $koneksi->query($q);
 
+if ($koneksi->connect_error) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
+
 $id = $koneksi->insert_id;
 
 http_response_code(201);
