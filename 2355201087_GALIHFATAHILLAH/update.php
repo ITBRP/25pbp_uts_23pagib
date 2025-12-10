@@ -86,6 +86,15 @@ if (count($errors) > 0) {
 
 $k = new mysqli("localhost", "root", "", "uts_mobil");
 
+if ($k->connect_errno) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
+
 // CEK APAKAH ID TERSEDIA
 $cek = $k->query("SELECT * FROM mobil WHERE id='$id'");
 if ($cek->num_rows === 0) {
