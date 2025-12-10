@@ -14,6 +14,7 @@ if (!isset($_POST['brand']) || strlen(trim($_POST['brand'])) < 2) {
     $errors['brand'] = "Brand minimal 2 karakter";
 }
 
+
 // Validasi model
 if (!isset($_POST['model']) || !preg_match('/^[a-zA-Z0-9 ]+$/', $_POST['model'])) {
     $errors['model'] = "Model tidak boleh karakter spesial";
