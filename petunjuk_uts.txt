@@ -9,3 +9,17 @@ Buat project BE dengan nama project/folder NIM_NICKNAME
 
 Link API Doc:
 https://docs.google.com/document/d/1lrdaTwCspIlHtKC30rjHr5oDtqINZCHtiviK5XiTQOI/edit?usp=sharing
+
+Ketentuan Penilian
+------------------
+- Database 1
+- Create Postman 1
+- Create Code 1
+- Get All Postman 1
+- Get All Code 2
+- Get By Id Postman 1
+- Get By Id Code 2
+- Update Postman 1
+- Update Code 2
+- Delete Postman 1
+- Delete Code 2
