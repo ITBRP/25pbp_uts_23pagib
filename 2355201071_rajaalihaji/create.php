@@ -1,10 +1,10 @@
 <?php 
 header("Content-Type: application/json; charset=UTF-8");
 if($_SERVER['REQUEST_METHOD'] != 'POST'){
-    http_response_code(500);
+    http_response_code(405);
     $res = [
         'status' => 'error',
-        'msg' => 'Server error !'
+        'msg' => 'Method error !'
     ];
     echo json_encode($res);
     exit();
@@ -73,7 +73,7 @@ if(!isset($_POST['transmission'])){
 }
 
 $anyPhoto = false;
-$namaPhoto = '';
+$namaPhoto = 'null';
 if (isset($_FILES['photo'])) {
 
     // User memilih file
@@ -105,6 +105,14 @@ if(count($errors)>0){
 
 // insert ke db
 $koneksi = new mysqli('localhost', 'root','', 'mobil');
+if ($koneksi->connect_error) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
 $brand = $_POST['brand'];
 $model = $_POST['model'];
 $year = $_POST['year'];
