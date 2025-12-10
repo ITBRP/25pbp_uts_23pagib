@@ -91,6 +91,15 @@ if (count($errors) > 0) {
 
 $koneksi = new mysqli('localhost', 'root', '', 'data_mobil');
 
+if ($koneksi->connect_error) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
+
 $brand = $_POST['brand'];
 $model = $_POST['model'];
 $year  = $_POST['year'];
