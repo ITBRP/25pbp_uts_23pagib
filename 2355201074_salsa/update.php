@@ -1,53 +1,20 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-// Hanya izinkan PUT
+
 if ($_SERVER['REQUEST_METHOD'] !== 'PUT') {
-    http_response_code(500);
+    http_response_code(405);
     echo json_encode([
         "status" => "error",
-        "msg" => "server error"
+        "msg" => "Method error"
     ]);
     exit;
 }
 
-// Ambil ID dari query string
-$id = $_GET['id'] ?? null;
-if (!$id || !is_numeric($id)) {
-    http_response_code(400);
-    echo json_encode([
-        "status" => "error",
-        "msg" => "Data error",
-        "errors" => ["id" => "ID tidak valid"]
-    ]);
-    exit;
-}
 
-// Baca JSON dari body
 $raw = file_get_contents("php://input");
 $data = json_decode($raw, true);
 
-// JSON invalid
-if ($data === null) {
-    http_response_code(400);
-    echo json_encode([
-        "status" => "error",
-        "msg" => "Data error",
-        "errors" => ["json" => "Format JSON tidak valid"]
-    ]);
-    exit;
-}
-
-// Koneksi
-$koneksi = new mysqli("localhost", "root", "", "db_salsa");
-if ($koneksi->connect_errno) {
-    http_response_code(500);
-    echo json_encode([
-        "status" => "error",
-        "msg" => "Server error"
-    ]);
-    exit;
-}
 
 $errors = [];
 
@@ -116,23 +83,23 @@ $anyPhoto = false;
 $namaPhoto = '';
 if (isset($_FILES['photo'])) {
 
-    // User memilih file
+   
     if ($_FILES['photo']['error'] !== UPLOAD_ERR_NO_FILE) {
         $allowed = ['jpg', 'jpeg', 'png'];
-        $fileName = $_FILES['photo']['name']; //namaaslifile.JPEG, docx
-        $fileExt  = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)); // hasilnya jadi jpeg
+        $fileName = $_FILES['photo']['name']; 
+        $fileExt  = strtolower(pathinfo($fileName, PATHINFO_EXTENSION)); 
 
         if (!in_array($fileExt, $allowed)) {
             $errors['photo'] = "File harus jpg, jpeg atau png";
         } else {
-            $anyPhoto = true; // photo valid, siap disave
-            $namaPhoto = md5(date('dmyhis')) . "." . $fileExt; // fjsadlfjiajflsdjflsadkjfsad.jpeg
+            $anyPhoto = true; 
+            $namaPhoto = md5(date('dmyhis')) . "." . $fileExt; 
         }
     }
 
 }
 
-// Jika ada error validasi
+
 if (!empty($errors)) {
     http_response_code(400);
     echo json_encode([
@@ -143,7 +110,7 @@ if (!empty($errors)) {
     exit;
 }
 
-// Cek apakah data exist
+
 $cek = $koneksi->query("SELECT * FROM uts WHERE id=$id");
 if (!$cek || $cek->num_rows == 0) {
     http_response_code(404);
@@ -154,7 +121,15 @@ if (!$cek || $cek->num_rows == 0) {
     exit;
 }
 
-// UPDATE DATA
+$koneksi = new mysqli("localhost", "root", "", "db_salsa");
+if ($koneksi->connect_error) {
+    http_response_code(500);
+    echo json_encode([
+        "status" => "error",
+        "msg" => "Server error"
+    ]);
+    exit();
+}
 $q = "
     UPDATE uts SET
         brand = '".$koneksi->real_escape_string($data['brand'])."',
@@ -175,7 +150,7 @@ if (!$koneksi->query($q)) {
     exit;
 }
 
-// RESPONSE SUCCESS
+
 http_response_code(200);
 
 echo json_encode([

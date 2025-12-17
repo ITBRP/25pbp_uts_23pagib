@@ -1,40 +1,36 @@
 <?php
 header("Content-Type: application/json; charset=UTF-8");
 
-// CEK METHOD HARUS GET
-if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-    http_response_code(405); // Method Not Allowed
+if ($_SERVER['REQUEST_METHOD'] != 'GET') {
+    http_response_code(405);
     echo json_encode([
         'status' => 'error',
-        'msg' => 'server eror'
+        'msg' => 'Method error!'
     ]);
     exit();
 }
 
-// koneksi
-$koneksi = new mysqli('localhost', 'root', '', 'db_salsa');
-
+$koneksi = new mysqli('localhost', 'root', '', 'uts');
 if ($koneksi->connect_error) {
     http_response_code(500);
     echo json_encode([
-        'status' => 'error',
-        'msg' => 'Koneksi database gagal'
+        "status" => "error",
+        "msg" => "Server error"
     ]);
     exit();
 }
 
-// query select
-$q = "SELECT id, brand, model, year, price, transmission, photo 
-      FROM uts 
-      ORDER BY id DESC";
-
+$q = "SELECT id, brand, model, year, price, transmission, photo FROM uts ORDER BY id ASC";
 $result = $koneksi->query($q);
+
+
 $data = [];
 
 while ($row = $result->fetch_assoc()) {
-    $row['photo'] = $row['photo'] ? $row['photo'] : "";
     $data[] = $row;
 }
+
+http_response_code(200);
 
 echo json_encode([
     'status' => 'success',
