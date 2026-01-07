@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="jquery.js"></script>
+</head>
+
+<body>
+    <form id="myForm" enctype="multipart/form-data">
+      <div>
+        <label>Brand</label><br />
+        <input type="text" name="brand" id="brand" />
+        <span class="error brand" style="color: red"></span>
+      </div>
+
+      <div>
+        <label>Model</label><br />
+        <input type="text" name="model" id="model" />
+        <span class="error model" style="color: red"></span>
+      </div>
+
+      <div>
+        <label>Year</label><br />
+        <input type="number" name="year" id="year" />
+        <span class="error year" style="color: red"></span>
+      </div>
+
+      <div>
+        <label>Price</label><br />
+        <input type="number" name="price" id="price" />
+        <span class="error price" style="color: red"></span>
+      </div>
+
+      <div>
+        <label>Transmission</label><br />
+        <select name="transmission" id="transmission">
+          <option value="">-- Pilih --</option>
+          <option value="Manual">Manual</option>
+          <option value="Automatic">Automatic</option>
+        </select>
+        <span class="error transmission" style="color: red"></span>
+      </div>
+
+      <div>
+        <label>Photo (Optional)</label><br />
+        <input type="file" name="photo" id="photo" />
+        <span class="error photo" style="color: red"></span>
+      </div>
+
+      <div>
+        <button type="submit">Simpan</button>
+      </div>
+    </form>
+
+    <script>
+
+        $(document).on("submit", "#myForm", function (e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            
+            $.ajax({
+                url: "http://localhost/25pbp_uts_23pagib/2355201072_afriansaputra/create.php",
+                 type: "POST",
+          data: formData,
+          contentType: false,
+          processData: false,
+
+          beforeSend: function () {
+            $(".error").text("");
+          },
+
+          success: function (res) {
+            alert(res.msg + ", Data mobil berhasil ditambahkan");
+            $("#myForm")[0].reset();
+          },
+
+          error: function (res) {
+            let response = res.responseJSON;
+
+            Object.entries(response.errors).forEach(([key, val]) => {
+              $("." + key).text(val);
+            });
+          },
+        });
+      });
+    </script>
+
+</body>
+
+</html>
