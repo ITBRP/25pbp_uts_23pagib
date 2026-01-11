@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Mobil</title>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #f4f6f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .card {
+            background: #ffffff;
+            width: 400px;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 6px;
+            color: #555;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: #007bff;
+            outline: none;
+        }
+
+        .form-group input[type="file"] {
+            padding: 6px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #007bff;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Create Mobil</h2>
+
+    <form id="formCreate" enctype="multipart/form-data">
+        <div class="form-group">
+            <label>Brand</label>
+            <input type="text" name="brand" placeholder="Brand">
+        </div>
+
+        <div class="form-group">
+            <label>Model</label>
+            <input type="text" name="model" placeholder="Model">
+        </div>
+
+        <div class="form-group">
+            <label>Year</label>
+            <input type="text" name="year" placeholder="Year">
+        </div>
+
+        <div class="form-group">
+            <label>Price</label>
+            <input type="text" name="price" placeholder="Price">
+        </div>
+
+        <div class="form-group">
+            <label>Transmission</label>
+            <select name="transmission">
+                <option value="">-- pilih --</option>
+                <option value="Manual">Manual</option>
+                <option value="Automatic">Automatic</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Photo</label>
+            <input type="file" name="photo">
+        </div>
+
+        <button type="submit">Simpan</button>
+    </form>
+</div>
+
+<script>
+$("#formCreate").submit(function(e){
+    e.preventDefault();
+
+    let fd = new FormData(this);
+
+    $.ajax({
+        url: "http://localhost/25pbp_uts_23pagib/2355201073_SuciRamadani/create.php",
+        type: "POST",
+        data: fd,
+        contentType: false,
+        processData: false,
+        success: function(res){
+            alert("Success");
+            console.log(res);
+        },
+        error: function(xhr){
+            alert("Error");
+            console.log(xhr.responseText);
+        }
+    });
+});
+</script>
+
+</body>
+</html>
